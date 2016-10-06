@@ -4,8 +4,8 @@
 void ConfigGL(WindowConfig* pConfig)
 {
     pConfig->WindowTitle = "MapBuffer test";
-    pConfig->ClientWidth = 1;
-    pConfig->ClientHeight = 1;
+    pConfig->ClientWidth = 640;
+    pConfig->ClientHeight = 480;
 }
 
 void InitGL()
@@ -17,30 +17,28 @@ void InitGL()
     GLuint data[] = { 0, 1, 2 };
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buf0);
-    glBufferStorage(GL_ELEMENT_ARRAY_BUFFER, sizeof(data), data, GL_MAP_READ_BIT | GL_MAP_WRITE_BIT);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(data), data, GL_DYNAMIC_DRAW);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buf1);
-    glBufferStorage(GL_ELEMENT_ARRAY_BUFFER, sizeof(data), data, GL_MAP_READ_BIT | GL_MAP_WRITE_BIT);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(data), data, GL_DYNAMIC_DRAW);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buf0);
-    GLuint* mapped0 = (GLuint*)glMapBufferRange(GL_ELEMENT_ARRAY_BUFFER, 0, sizeof(data), GL_MAP_READ_BIT);
+    GLuint* mapped0 = (GLuint*)glMapBufferRange(GL_ELEMENT_ARRAY_BUFFER, 0, sizeof(data), GL_MAP_WRITE_BIT | GL_MAP_UNSYNCHRONIZED_BIT);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buf1);
-    GLuint* mapped1 = (GLuint*)glMapBufferRange(GL_ELEMENT_ARRAY_BUFFER, 0, sizeof(data), GL_MAP_READ_BIT);
+    GLuint* mapped1 = (GLuint*)glMapBufferRange(GL_ELEMENT_ARRAY_BUFFER, 0, sizeof(data), GL_MAP_WRITE_BIT | GL_MAP_UNSYNCHRONIZED_BIT);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-    printf("buffer 0:\n");
+    printf("writing to buffer 0\n");
     for (int i = 0; i < 3; i++)
-        printf("%d ", mapped0[i]);
-    printf("\n");
+        mapped0[i] = i;
 
-    printf("buffer 1:\n");
+    printf("writing to buffer 1\n");
     for (int i = 0; i < 3; i++)
-        printf("%d ", mapped1[i]);
-    printf("\n");
+        mapped0[i] = i;
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buf0);
     glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER);
@@ -55,8 +53,6 @@ void InitGL()
         printf("There were no GL errors.\n");
     else
         printf("There was a GL error.\n");
-
-    system("pause");
 }
 
 void ResizeGL(int width, int height)
